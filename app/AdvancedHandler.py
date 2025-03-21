@@ -3,12 +3,6 @@ from http.server import BaseHTTPRequestHandler
 
 from loguru import logger
 
-from settings import STATIC_PATH, LOG_PATH, LOG_FILE
-
-logger.add(LOG_PATH + LOG_FILE,
-           format='[{time:YYYY-MM-DD HH:mm:ss}] {level}: {message}',
-           level='INFO')
-
 
 class AdvancedHTTPRequestHandler(BaseHTTPRequestHandler):
 
