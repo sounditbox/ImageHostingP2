@@ -44,5 +44,5 @@ class AdvancedHTTPRequestHandler(BaseHTTPRequestHandler):
         self.post_routes.get(self.path, self.default_response)()
 
     def do_DELETE(self):
-        logger.info(f'POST {self.path}')
+        logger.info(f'DELETE {self.path}')
         self.delete_routes.get(self.path, self.default_response)()
