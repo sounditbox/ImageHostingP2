@@ -52,7 +52,7 @@ class ImageHostingHttpRequestHandler(AdvancedHTTPRequestHandler):
     def delete_image(self):
         image_id = self.headers.get('Filename')
         if not image_id:
-            logger.warning('Image not found')
+            logger.warning('Filename header not found')
             self.send_html(ERROR_FILE, 404)
             return
 
