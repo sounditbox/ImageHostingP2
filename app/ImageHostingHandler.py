@@ -1,4 +1,5 @@
 import os
+from urllib.parse import urlparse, parse_qs
 from uuid import uuid4
 
 from loguru import logger
@@ -23,20 +24,19 @@ class ImageHostingHttpRequestHandler(AdvancedHTTPRequestHandler):
         self.delete_routes = {
             '/api/delete/': self.delete_image
         }
-        self.db = DBManager(os.getenv('POSTGRES_DB'),
-                            os.getenv('POSTGRES_USER'),
-                            os.getenv('POSTGRES_PASSWORD'),
-                            os.getenv('POSTGRES_HOST'),
-                            os.getenv('POSTGRES_PORT'))
-        self.db.connect()
+        self.db = DBManager()
         # self.db.init_tables()
         # self.db.clear_images()
         super().__init__(request, client_address, server)
 
     def get_images(self):
-        images = self.db.get_images()
-        logger.info(f'Got {len(images)} images')
 
+        logger.info(self.headers.get('Query-String'))
+        query_components = parse_qs(self.headers.get('Query-String'))
+        logger.info(query_components)
+        page = int(query_components.get('page', ['1'])[0])
+        logger.info(f'Page: {page}')
+        images = self.db.get_images(page)
         images_json = []
         for image in images:
             image = {
@@ -48,7 +48,6 @@ class ImageHostingHttpRequestHandler(AdvancedHTTPRequestHandler):
             }
             images_json.append(image)
 
-        logger.info(images_json)
         self.send_json({
             'images': images_json
         })

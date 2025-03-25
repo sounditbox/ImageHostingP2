@@ -2,15 +2,25 @@ import psycopg
 from loguru import logger
 
 
-class DBManager:
-    def __init__(self, dbname: str, user: str,
-                 password: str, host: str, port: int):
+class SingletonMeta(type):
+    _instances = {}
+
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            instance = super().__call__(*args, **kwargs)
+            cls._instances[cls] = instance
+        return cls._instances[cls]
+
+
+class DBManager(metaclass=SingletonMeta):
+    def __init__(self, dbname: str = None, user: str = None,
+                 password: str = None, host: str = None, port: int = None):
         self.dbname = dbname
         self.user = user
         self.password = password
         self.host = host
         self.port = port
-        self.conn = None
+        self.conn = self.connect()
 
     def connect(self) -> psycopg.Connection:
         try:
@@ -43,9 +53,11 @@ class DBManager:
         logger.info('Tables initialized')
         self.conn.commit()
 
-    def get_images(self):
+    def get_images(self, page=1):
+        offset = (page - 1) * 10
+        logger.info(f'Try to get images with offset {offset}')
         with self.connect().cursor() as cursor:
-            cursor.execute("SELECT * FROM images")
+            cursor.execute("SELECT * FROM images LIMIT 10 OFFSET %s", (offset,))
             return cursor.fetchall()
 
     def add_image(self, filename, original_name, length, ext):
