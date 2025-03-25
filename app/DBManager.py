@@ -63,3 +63,12 @@ class DBManager:
         with self.conn.cursor() as cursor:
             cursor.execute("DELETE FROM images")
         self.conn.commit()
+
+    def delete_image(self, filename):
+        logger.info(f'Try to delete image {filename}')
+        try:
+            with self.conn.cursor() as cursor:
+                cursor.execute("DELETE FROM images WHERE filename = %s", (filename,))
+            self.conn.commit()
+        except psycopg.Error as e:
+            logger.error(f"Error deleting image: {e}")

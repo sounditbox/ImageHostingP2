@@ -14,11 +14,12 @@ function setImages(images) {
         const tdTime = document.createElement('td');
         const tdDelete = document.createElement('td');
         const deleteButton = document.createElement('button');
+        const fullFilename = image.filename + image.file_type;
         deleteButton.onclick = () => {
             fetch('/api/delete/', {
                 method: 'DELETE',
                 headers: {
-                    'Filename': image
+                    'Filename': fullFilename
                 }
             })
             .then(data => {
@@ -29,8 +30,8 @@ function setImages(images) {
         deleteButton.classList.add('delete-btn');
         tdDelete.appendChild(deleteButton);
 
-        tdPreview.innerHTML = `<img src="/images/${image.filename}${image.file_type}" width="42" height="100%">`;
-        tdUrl.innerHTML = `<a href="/images/${image.filename}${image.file_type}" target="_blank">${image.original_name}${image.file_type}</a>`;
+        tdPreview.innerHTML = `<img src="/images/${fullFilename}" width="42" height="100%">`;
+        tdUrl.innerHTML = `<a href="/images/${fullFilename}" target="_blank">${image.original_name}${image.file_type}</a>`;
         tdSize.innerHTML = image.size;
         tdTime.innerHTML = image.upload_date;
 

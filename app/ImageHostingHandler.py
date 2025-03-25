@@ -48,7 +48,6 @@ class ImageHostingHttpRequestHandler(AdvancedHTTPRequestHandler):
             }
             images_json.append(image)
 
-
         logger.info(images_json)
         self.send_json({
             'images': images_json
@@ -77,16 +76,15 @@ class ImageHostingHttpRequestHandler(AdvancedHTTPRequestHandler):
             'Location': f'http://localhost/{IMAGES_PATH}{filename}{ext}'})
 
     def delete_image(self):
-        image_id = self.headers.get('Filename')
+        image_id, ext = os.path.splitext(self.headers.get('Filename'))
         if not image_id:
             logger.warning('Filename header not found')
             self.send_html(ERROR_FILE, 404)
             return
-
-        image_path = IMAGES_PATH + image_id
+        self.db.delete_image(image_id)
+        image_path = IMAGES_PATH + image_id + ext
         if not os.path.exists(image_path):
             logger.warning('Image not found')
             self.send_html(ERROR_FILE, 404)
-            return os.remove(image_path)
-
+        os.remove(image_path)
         self.send_json({'Success': 'Image deleted'})
