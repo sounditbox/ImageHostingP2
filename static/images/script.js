@@ -32,7 +32,7 @@ function setImages(images) {
         tdPreview.innerHTML = `<img src="/images/${image.filename}${image.file_type}" width="42" height="100%">`;
         tdUrl.innerHTML = `<a href="/images/${image.filename}${image.file_type}" target="_blank">${image.original_name}${image.file_type}</a>`;
         tdSize.innerHTML = image.size;
-        tdTime.innerHTML = image.upload_time;
+        tdTime.innerHTML = image.upload_date;
 
 
         tr.appendChild(tdPreview);

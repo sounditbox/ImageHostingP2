@@ -48,13 +48,18 @@ class DBManager:
             cursor.execute("SELECT * FROM images")
             return cursor.fetchall()
 
-    def add_image(self, filename, original_name, length, ext, upload_date=None):
+    def add_image(self, filename, original_name, length, ext):
         logger.info(f'Try to add image {filename}')
         with self.conn.cursor() as cursor:
             cursor.execute(
                 "INSERT INTO images "
-                "(filename, original_name, size, file_type, upload_time) "
-                "VALUES (%s, %s, %s, %s, %s)",
-                (filename, original_name, length, ext, upload_date)
+                "(filename, original_name, size, file_type)"
+                "VALUES (%s, %s, %s, %s)",
+                (filename, original_name, length, ext)
             )
+        self.conn.commit()
+
+    def clear_images(self):
+        with self.conn.cursor() as cursor:
+            cursor.execute("DELETE FROM images")
         self.conn.commit()

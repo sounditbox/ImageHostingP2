@@ -30,19 +30,25 @@ class ImageHostingHttpRequestHandler(AdvancedHTTPRequestHandler):
                             os.getenv('POSTGRES_PORT'))
         self.db.connect()
         # self.db.init_tables()
+        # self.db.clear_images()
         super().__init__(request, client_address, server)
 
     def get_images(self):
         images = self.db.get_images()
         logger.info(f'Got {len(images)} images')
-        images_json = \
-            [
-                dict(zip(['id', 'filename', 'original_name', 'size',
-                          'upload_time',
-                          'file_type'], image)
-                     )
-                for image in images
-            ]
+
+        images_json = []
+        for image in images:
+            image = {
+                'filename': image[1],
+                'original_name': image[2],
+                'size': image[3],
+                'upload_date': image[4].strftime('%Y-%m-%d %H:%M:%S'),
+                'file_type': image[5]
+            }
+            images_json.append(image)
+
+
         logger.info(images_json)
         self.send_json({
             'images': images_json
@@ -62,7 +68,8 @@ class ImageHostingHttpRequestHandler(AdvancedHTTPRequestHandler):
             logger.warning('File type not allowed')
             self.send_html(ERROR_FILE, 400)
             return
-        self.db.add_image(filename, orig_name, length, ext)
+        file_size_kb = round(length / 1024)
+        self.db.add_image(filename, orig_name, file_size_kb, ext)
         logger.info(f'File {filename}{ext} uploaded')
         with open(IMAGES_PATH + f'{filename}{ext}', 'wb') as file:
             file.write(data)
