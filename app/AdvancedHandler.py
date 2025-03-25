@@ -3,6 +3,8 @@ from http.server import BaseHTTPRequestHandler
 
 from loguru import logger
 
+from settings import STATIC_PATH
+
 
 class AdvancedHTTPRequestHandler(BaseHTTPRequestHandler):
 

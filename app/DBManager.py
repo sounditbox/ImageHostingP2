@@ -29,7 +29,7 @@ class DBManager:
         self.conn.close()
 
     def execute(self, query: str):
-        with self.connect().cursor() as cursor:
+        with self.conn.cursor() as cursor:
             cursor.execute(query)
 
     def execute_file(self, filename: str):
@@ -40,8 +40,21 @@ class DBManager:
 
     def init_tables(self):
         self.execute_file('init_tables.sql')
+        logger.info('Tables initialized')
+        self.conn.commit()
 
     def get_images(self):
-        with self.conn.cursor() as cursor:
+        with self.connect().cursor() as cursor:
             cursor.execute("SELECT * FROM images")
             return cursor.fetchall()
+
+    def add_image(self, filename, original_name, length, ext, upload_date=None):
+        logger.info(f'Try to add image {filename}')
+        with self.conn.cursor() as cursor:
+            cursor.execute(
+                "INSERT INTO images "
+                "(filename, original_name, size, file_type, upload_time) "
+                "VALUES (%s, %s, %s, %s, %s)",
+                (filename, original_name, length, ext, upload_date)
+            )
+        self.conn.commit()
