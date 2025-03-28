@@ -15,8 +15,6 @@ class ImageHostingHttpRequestHandler(AdvancedHTTPRequestHandler):
 
     def __init__(self, request, client_address, server):
         self.db = DBManager()
-        # self.db.init_tables()
-        # self.db.clear_images()
         super().__init__(request, client_address, server)
 
     def get_images(self):
