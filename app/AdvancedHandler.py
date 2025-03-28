@@ -3,6 +3,7 @@ from http.server import BaseHTTPRequestHandler
 
 from loguru import logger
 
+from Router import Router
 from settings import STATIC_PATH
 
 
@@ -10,6 +11,13 @@ class AdvancedHTTPRequestHandler(BaseHTTPRequestHandler):
 
     def __init__(self, request, client_address, server):
         self.default_response = lambda: self.send_html('404.html', 404)
+
+        self.router = Router()
+        self.router.add_route('GET', r'^/api/images/$', self.get_images)
+        self.router.add_route('POST', r'^\/upload\/$', self.post_upload)
+        self.router.add_route('DELETE',
+                              r'^\/api\/delete\/(.*)$',
+                              self.delete_image)
         super().__init__(request, client_address, server)
 
     def send_html(self, file, code=200, headers=None, file_path=STATIC_PATH):
@@ -33,12 +41,27 @@ class AdvancedHTTPRequestHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         logger.info(f'GET {self.path}')
-        self.get_routes.get(self.path, self.default_response)()
+        handler = self.router.resolve('GET', self.path)
+        if handler:
+            handler()
+        else:
+            logger.warning(f'No handler for GET {self.path}')
+            self.default_response()
 
     def do_POST(self):
         logger.info(f'POST {self.path}')
-        self.post_routes.get(self.path, self.default_response)()
+        handler = self.router.resolve('POST', self.path)
+        if handler:
+            handler()
+        else:
+            logger.warning(f'No handler for POST {self.path}')
+            self.default_response()
 
     def do_DELETE(self):
         logger.info(f'DELETE {self.path}')
-        self.delete_routes.get(self.path, self.default_response)()
+        handler = self.router.resolve('DELETE', self.path)
+        if handler:
+            handler()
+        else:
+            logger.warning(f'No handler for DELETE {self.path}')
+            self.default_response()

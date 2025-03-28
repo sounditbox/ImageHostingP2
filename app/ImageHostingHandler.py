@@ -14,16 +14,6 @@ class ImageHostingHttpRequestHandler(AdvancedHTTPRequestHandler):
     server_version = 'Image Hosting Server v0.1'
 
     def __init__(self, request, client_address, server):
-
-        self.get_routes = {
-            '/api/images/': self.get_images
-        }
-        self.post_routes = {
-            '/upload/': self.post_upload
-        }
-        self.delete_routes = {
-            '/api/delete/': self.delete_image
-        }
         self.db = DBManager()
         # self.db.init_tables()
         # self.db.clear_images()
