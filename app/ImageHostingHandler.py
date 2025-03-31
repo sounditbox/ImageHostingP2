@@ -1,5 +1,5 @@
 import os
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import parse_qs
 from uuid import uuid4
 
 from loguru import logger
@@ -10,20 +10,17 @@ from settings import IMAGES_PATH, \
     ALLOWED_EXTENSIONS, MAX_FILE_SIZE, ERROR_FILE
 
 
-class ImageHostingHttpRequestHandler(AdvancedHTTPRequestHandler):
-    server_version = 'Image Hosting Server v0.1'
+class ImageHostingHandler(AdvancedHTTPRequestHandler):
+    server_version = 'Image Hosting Server v0.2'
 
     def __init__(self, request, client_address, server):
         self.db = DBManager()
         super().__init__(request, client_address, server)
 
     def get_images(self):
-
         logger.info(self.headers.get('Query-String'))
         query_components = parse_qs(self.headers.get('Query-String'))
-        logger.info(query_components)
         page = int(query_components.get('page', ['1'])[0])
-        logger.info(f'Page: {page}')
         images = self.db.get_images(page)
         images_json = []
         for image in images:

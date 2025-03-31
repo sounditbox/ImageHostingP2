@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from loguru import logger
 
 from DBManager import DBManager
-from ImageHostingHandler import ImageHostingHttpRequestHandler
+from ImageHostingHandler import ImageHostingHandler
 from Router import Router
 from settings import LOG_PATH, LOG_FILE
 from settings import SERVER_ADDRESS
@@ -15,7 +15,7 @@ logger.add(LOG_PATH + LOG_FILE,
            level='INFO')
 
 
-def run(server_class=HTTPServer, handler_class=ImageHostingHttpRequestHandler):
+def run(server_class=HTTPServer, handler_class=ImageHostingHandler):
     db = DBManager(os.getenv('POSTGRES_DB'),
                    os.getenv('POSTGRES_USER'),
                    os.getenv('POSTGRES_PASSWORD'),
