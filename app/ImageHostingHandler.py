@@ -17,7 +17,7 @@ class ImageHostingHandler(AdvancedHTTPRequestHandler):
         self.db = DBManager()
         super().__init__(request, client_address, server)
 
-    def get_images(self):
+    def get_images(self) -> None:
         logger.info(self.headers.get('Query-String'))
         query_components = parse_qs(self.headers.get('Query-String'))
         page = int(query_components.get('page', ['1'])[0])
@@ -37,7 +37,7 @@ class ImageHostingHandler(AdvancedHTTPRequestHandler):
             'images': images_json
         })
 
-    def post_upload(self):
+    def post_upload(self) -> None:
         length = int(self.headers.get('Content-Length'))
         if length > MAX_FILE_SIZE:
             logger.warning('File too large')
@@ -59,15 +59,15 @@ class ImageHostingHandler(AdvancedHTTPRequestHandler):
         self.send_html('upload_success.html', headers={
             'Location': f'http://localhost/{IMAGES_PATH}{filename}{ext}'})
 
-    def delete_image(self, id):
-        logger.info(f'Try to delete image {id}')
-        image_id, ext = os.path.splitext(id)
-        if not image_id:
+    def delete_image(self, image_id: str) -> None:
+        logger.info(f'Try to delete image {image_id}')
+        filename, ext = os.path.splitext(image_id)
+        if not filename:
             logger.warning('Filename header not found')
             self.send_html(ERROR_FILE, 404)
             return
-        self.db.delete_image(image_id)
-        image_path = IMAGES_PATH + image_id + ext
+        self.db.delete_image(filename)
+        image_path = IMAGES_PATH + filename + ext
         if not os.path.exists(image_path):
             logger.warning('Image not found')
             self.send_html(ERROR_FILE, 404)

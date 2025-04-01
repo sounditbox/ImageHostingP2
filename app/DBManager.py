@@ -27,32 +27,32 @@ class DBManager(metaclass=SingletonMeta):
         except psycopg.Error as e:
             logger.error(f"DB connection error: {e}")
 
-    def close(self):
+    def close(self) -> None:
         self.conn.close()
 
-    def execute(self, query: str):
+    def execute(self, query: str) -> None:
         with self.conn.cursor() as cursor:
             cursor.execute(query)
 
-    def execute_file(self, filename: str):
+    def execute_file(self, filename: str) -> None:
         try:
             self.execute(open(f'./{filename}').read())
         except FileNotFoundError:
             logger.error(f"File {filename} not found")
 
-    def init_tables(self):
+    def init_tables(self) -> None:
         self.execute_file('init_tables.sql')
         logger.info('Tables initialized')
         self.conn.commit()
 
-    def get_images(self, page=1):
+    def get_images(self, page: int = 1) -> list[tuple]:
         offset = (page - 1) * 10
         logger.info(f'Try to get images with offset {offset}')
         with self.connect().cursor() as cursor:
             cursor.execute("SELECT * FROM images LIMIT 10 OFFSET %s", (offset,))
             return cursor.fetchall()
 
-    def add_image(self, filename, original_name, length, ext):
+    def add_image(self, filename: str, original_name: str, length: int, ext: str) -> None:
         logger.info(f'Try to add image {filename}')
         with self.conn.cursor() as cursor:
             cursor.execute(
@@ -63,12 +63,12 @@ class DBManager(metaclass=SingletonMeta):
             )
         self.conn.commit()
 
-    def clear_images(self):
+    def clear_images(self) -> None:
         with self.conn.cursor() as cursor:
             cursor.execute("DELETE FROM images")
         self.conn.commit()
 
-    def delete_image(self, filename):
+    def delete_image(self, filename: str) -> None:
         logger.info(f'Try to delete image {filename}')
         try:
             with self.conn.cursor() as cursor:
