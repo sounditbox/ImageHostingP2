@@ -21,6 +21,8 @@ class ImageHostingHandler(AdvancedHTTPRequestHandler):
         logger.info(self.headers.get('Query-String'))
         query_components = parse_qs(self.headers.get('Query-String'))
         page = int(query_components.get('page', ['1'])[0])
+        if page < 1:
+            page = 1
         images = self.db.get_images(page)
         images_json = []
         for image in images:
@@ -54,7 +56,7 @@ class ImageHostingHandler(AdvancedHTTPRequestHandler):
         file_size_kb = round(length / 1024)
         self.db.add_image(filename, orig_name, file_size_kb, ext)
         logger.info(f'File {filename}{ext} uploaded')
-        with open(IMAGES_PATH + f'{filename}{ext}', 'wb') as file:
+        with open(os.path.join(IMAGES_PATH, f'{filename}{ext}'), 'wb') as file:
             file.write(data)
         self.send_html('upload_success.html', headers={
             'Location': f'http://localhost/{IMAGES_PATH}{filename}{ext}'})
@@ -67,7 +69,7 @@ class ImageHostingHandler(AdvancedHTTPRequestHandler):
             self.send_html(ERROR_FILE, 404)
             return
         self.db.delete_image(filename)
-        image_path = IMAGES_PATH + filename + ext
+        image_path = os.path.join(IMAGES_PATH, f'{filename}{ext}')
         if not os.path.exists(image_path):
             logger.warning('Image not found')
             self.send_html(ERROR_FILE, 404)

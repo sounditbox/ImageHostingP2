@@ -13,7 +13,7 @@ from settings import SERVER_ADDRESS
 
 def run(server_class=HTTPServer, handler_class=ImageHostingHandler):
     load_dotenv()
-    logger.add(LOG_PATH + LOG_FILE,
+    logger.add(os.path.join(LOG_PATH, LOG_FILE),
                format='[{time:YYYY-MM-DD HH:mm:ss}] {level}: {message}',
                level='INFO')
 

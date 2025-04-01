@@ -1,4 +1,5 @@
 import json
+import os.path
 from http.server import BaseHTTPRequestHandler
 
 from loguru import logger
@@ -25,7 +26,7 @@ class AdvancedHTTPRequestHandler(BaseHTTPRequestHandler):
             for header, value in headers.items():
                 self.send_header(header, value)
         self.end_headers()
-        with open(file_path + file, 'rb') as file:
+        with open(os.path.join(file_path, file), 'rb') as file:
             self.wfile.write(file.read())
 
     def send_json(self, response: dict, code: int = 200,

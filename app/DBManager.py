@@ -31,8 +31,11 @@ class DBManager(metaclass=SingletonMeta):
         self.conn.close()
 
     def execute(self, query: str) -> None:
-        with self.conn.cursor() as cursor:
-            cursor.execute(query)
+        try:
+            with self.conn.cursor() as cursor:
+                cursor.execute(query)
+        except psycopg.Error as e:
+            logger.error(f"Error executing query: {e}")
 
     def execute_file(self, filename: str) -> None:
         try:
