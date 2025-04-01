@@ -13,12 +13,7 @@ function setImages(images) {
     const deleteButton = document.createElement('button');
     const fullFilename = image.filename + image.file_type;
     deleteButton.onclick = () => {
-      fetch('/api/delete/', {
-        method: 'DELETE',
-        headers: {
-          'Filename': fullFilename
-        }
-      })
+      fetch(`/api/delete/${fullFilename}`, { method: 'DELETE' })
       .then(() => loadImages(currentPage))
       .catch(error => console.error(error));
     }

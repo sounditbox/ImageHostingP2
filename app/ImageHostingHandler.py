@@ -59,8 +59,9 @@ class ImageHostingHandler(AdvancedHTTPRequestHandler):
         self.send_html('upload_success.html', headers={
             'Location': f'http://localhost/{IMAGES_PATH}{filename}{ext}'})
 
-    def delete_image(self):
-        image_id, ext = os.path.splitext(self.headers.get('Filename'))
+    def delete_image(self, id):
+        logger.info(f'Try to delete image {id}')
+        image_id, ext = os.path.splitext(id)
         if not image_id:
             logger.warning('Filename header not found')
             self.send_html(ERROR_FILE, 404)

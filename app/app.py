@@ -24,10 +24,9 @@ def run(server_class=HTTPServer, handler_class=ImageHostingHandler):
     db.init_tables()
 
     router = Router()
-    router.add_route('GET', r'^/api/images/$', handler_class.get_images)
-    router.add_route('POST', r'^\/upload\/$', handler_class.post_upload)
-    router.add_route('DELETE', r'^\/api\/delete\/(.*)$',
-                     handler_class.delete_image)
+    router.add_route('GET', '/api/images/', handler_class.get_images)
+    router.add_route('POST', '/upload/', handler_class.post_upload)
+    router.add_route('DELETE', '/api/delete/<id>', handler_class.delete_image)
 
     load_dotenv()
     httpd = server_class(SERVER_ADDRESS, handler_class)
