@@ -52,7 +52,7 @@ class DBManager(metaclass=SingletonMeta):
         offset = (page - 1) * 10
         logger.info(f'Try to get images with offset {offset}')
         with self.connect().cursor() as cursor:
-            cursor.execute("SELECT * FROM images LIMIT 10 OFFSET %s", (offset,))
+            cursor.execute("SELECT * FROM images ORDER BY upload_time DESC LIMIT 10 OFFSET %s", (offset,))
             return cursor.fetchall()
 
     def add_image(self, filename: str, original_name: str, length: int, ext: str) -> None:

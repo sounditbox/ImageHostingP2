@@ -40,12 +40,18 @@ function loadImages(page) {
   fetch(`/api/images/?page=${page}`)
     .then(response => response.json())
     .then(data => {
-      tbody.innerHTML = '';
-      setImages(data.images);
-      document.getElementById('nextPage').disabled = data.images.length < imagesPerPage;
-      document.getElementById('prevPage').disabled = page === 1;
-      document.getElementById('currentPage').textContent = page;
-      currentPage = page;
+      if (data.images.length == 0) {
+          document.querySelector('main').style.display = 'none';
+          document.body.appendChild(document.createElement('h1')).textContent = 'Нет загруженных изображений';
+
+      } else {
+          tbody.innerHTML = '';
+          setImages(data.images);
+          document.getElementById('nextPage').disabled = data.images.length < imagesPerPage;
+          document.getElementById('prevPage').disabled = page === 1;
+          document.getElementById('currentPage').textContent = page;
+          currentPage = page;
+      }
     });
 }
 
